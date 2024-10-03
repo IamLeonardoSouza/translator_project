@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'translator.apps.TranslatorConfig',
+    'translator_text.apps.TranslatorTextConfig',
     'widget_tweaks'
 ]
 
