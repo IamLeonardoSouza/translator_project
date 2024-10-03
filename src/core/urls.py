@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from translator.views import tradutor_view
+from translator.views import translator_text_view
+from home.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', tradutor_view)
+    path('translator_text', translator_text_view, name="translator_text"),
+    path('', home_view, name="home")
 ]
