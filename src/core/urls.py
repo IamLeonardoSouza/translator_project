@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from translator_text.views import translator_text_view
 from home.views import home_view
+from translator_audio.views import translate_audio_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('translator_text', translator_text_view, name="translator_text"),
-    path('', home_view, name="home")
+    path('', home_view, name="home"),
+    path('translator_audio', translate_audio_view, name="translator_audio"),
 ]

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradução de Áudio</title>
+</head>
+<body>
+    <h1>Tradução de Áudio</h1>
+
+    <!-- Formulário para upload de arquivo de áudio -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ upload_form.as_p }}
+        <button type="submit" name="upload_audio">Enviar áudio para tradução</button>
+    </form>
+
+    <!-- Formulário para gravação de áudio -->
+    <form method="post">
+        {% csrf_token %}
+        {{ record_form.as_p }}
+        <button type="button" id="start-recording">Gravar áudio</button>
+        <button type="submit" name="record_audio" id="submit-recording" style="display:none;">Enviar áudio gravado</button>
+        <input type="hidden" id="recorded_audio" name="recorded_audio">
+    </form>
+
+    {% if translated_text %}
+        <h2>Tradução: {{ translated_text }}</h2>
+    {% endif %}
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById('start-recording').addEventListener('click', function() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener('stop', () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = function() {
+                            document.getElementById('recorded_audio').value = reader.result;
+                            document.getElementById('submit-recording').style.display = 'inline';
+                        }
+                    });
+
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                    }, 3000);  // 3 segundos de gravação
+                });
+        });
+    </script>
+</body>
+</html>
