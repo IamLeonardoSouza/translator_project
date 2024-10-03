@@ -14,7 +14,7 @@ def translator_text_view(request):
 
             if texto:
                 resultado = translate_text(texto, idioma_destino)
-
+        
     else:
         form = TradutorForm()
     

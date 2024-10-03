@@ -1,32 +1,60 @@
 {% extends "base.html" %}
 {% load static %}
 {% load widget_tweaks %}
-
 {% block content %}
-<div class="container mx-auto">
-    <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl border border-gray-200">
-        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Tradutor</h1>
+    <div class="container mx-auto">
+        <div class="max-w-lg mx-auto bg-white p-8">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Tradutor de Texto</h1>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                {{ form.texto|add_class:"block w-full text-sm border border-gray-400 rounded-lg p-2 mb-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" }}
+                {{ form.idioma_destino|add_class:"block w-full py-2.5 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4" }}
+                <div class="text-center">
+                    <button type="submit"
+                            class="w-full bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-300 flex items-center justify-center space-x-2">
+                        <i class="fas fa-language"></i>
+                        <span>Traduzir</span>
+                    </button>
+                </div>
+            </form>
+            {% if resultado %}
+                <div class="mt-6 p-4 bg-gray-50 border-l-4 border-blue-500 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-700">Resultado:</h2>
+                        <button id="copyButton"
+                                onclick="copyToClipboard()"
+                                class="bg-blue-500 text-white font-semibold px-3 py-1 rounded-lg hover:bg-blue-600 transition ease-in-out duration-300 flex items-center space-x-2">
+                            <span id="buttonText">Copiar</span>
+                        </button>
+                    </div>
+                    <p id="translated-text" class="mt-2 text-gray-600">{{ resultado|linebreaksbr }}</p>
+                </div>
+            {% endif %}
+            <script>
+        function copyToClipboard() {
+            // Seleciona o elemento com o texto traduzido
+            var translatedText = document.getElementById("translated-text").innerText;
 
-        <form method="POST" class="space-y-4">
-            {% csrf_token %}
-            {{ form.texto|add_class:"block w-full text-sm border border-gray-400 rounded-lg p-2 mb-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" }}
-            {{ form.idioma_destino|add_class:"block w-full py-2.5 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4" }}
+            // Usa a API de Clipboard para copiar o texto
+            navigator.clipboard.writeText(translatedText).then(function() {
+                // Muda o texto do botão e mostra o ícone de conferência (✔️)
+                var copyButton = document.getElementById("copyButton");
+                var buttonText = document.getElementById("buttonText");
+                buttonText.innerHTML = "✔️ Copiado";
+                copyButton.classList.add("bg-blue-500"); // Altera a cor para verde ao copiar
+                
+                // Após 5 segundos, reverte o texto do botão e a cor
+                setTimeout(function() {
+                    buttonText.innerHTML = "Copiar";
+                    copyButton.classList.remove("bg-blue-500");
+                    copyButton.classList.add("bg-blue-500"); // Volta para a cor azul
+                }, 5000);
 
-            <div class="text-center">
-                <button type="submit"
-                    class="w-full bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-300 flex items-center justify-center space-x-2">
-                    <i class="fas fa-language"></i>
-                    <span>Traduzir</span>
-                </button>
-            </div>
-        </form>
-
-        {% if resultado %}
-        <div class="mt-6 p-4 bg-gray-50 border-l-4 border-blue-500 rounded-lg shadow-sm">
-            <h2 class="text-xl font-semibold text-gray-700">Resultado:</h2>
-            <p class="mt-2 text-gray-600">{{ resultado }}</p>
+            }, function(err) {
+                console.error('Erro ao copiar: ', err);
+            });
+        }
+            </script>
         </div>
-        {% endif %}
     </div>
-</div>
 {% endblock content %}
