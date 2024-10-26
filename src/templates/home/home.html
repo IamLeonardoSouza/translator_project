@@ -1,4 +1,37 @@
 {% extends "base.html" %}
+
 {% block content %}
-<p>Home do Leozzera</p>
+<div class="container mx-auto mt-10 px-6">
+    <div class="text-center">
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            Bem-vindo ao Tradutor Multimodal
+        </h1>
+        <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+            Explore uma solução abrangente que oferece tradução de texto, áudio e, em breve, suporte para LIBRAS.
+            Comunicação clara e acessível para todos!
+        </p>
+    </div>
+
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Sobre o Projeto -->
+        <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Sobre o Projeto</h3>
+            <p class="mt-4 text-gray-600 dark:text-gray-300">
+                Esta aplicação foi desenvolvida com <strong>Django</strong>, visando oferecer um tradutor completo e versátil.
+                Com suporte para múltiplos formatos de entrada, buscamos facilitar a comunicação em diferentes contextos, 
+                incluindo texto, áudio e, futuramente, a linguagem de sinais.
+            </p>
+        </div>
+
+        <!-- Objetivo -->
+        <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Objetivo</h3>
+            <p class="mt-4 text-gray-600 dark:text-gray-300">
+                Nosso objetivo é criar uma ferramenta que promova inclusão e acessibilidade, 
+                garantindo que todos possam se expressar, independentemente do meio de comunicação.
+                Ao integrar áudio e sinais, a plataforma facilita o diálogo e reduz barreiras linguísticas.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock content %}
