@@ -1,62 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tradução de Áudio</title>
-</head>
-<body>
-    <h1>Tradução de Áudio</h1>
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container mx-auto">
+    <div class="max-w-lg mx-auto bg-white p-8">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Tradutor de Áudio</h1>
 
-    <!-- Formulário para upload de arquivo de áudio -->
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ upload_form.as_p }}
-        <button type="submit" name="upload_audio">Enviar áudio para tradução</button>
-    </form>
+        <!-- Formulário para upload de arquivo de áudio -->
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            {{ upload_form.audio_file|add_class:"block w-full text-sm border border-gray-400 rounded-lg p-2 mb-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" }}
+            <button type="submit" name="upload_audio"
+                    class="w-full bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-300 flex items-center justify-center space-x-2">
+                <i class="fas fa-upload"></i>
+                <span>Enviar áudio para tradução</span>
+            </button>
+        </form>
 
-    <!-- Formulário para gravação de áudio -->
-    <form method="post">
-        {% csrf_token %}
-        {{ record_form.as_p }}
-        <button type="button" id="start-recording">Gravar áudio</button>
-        <button type="submit" name="record_audio" id="submit-recording" style="display:none;">Enviar áudio gravado</button>
-        <input type="hidden" id="recorded_audio" name="recorded_audio">
-    </form>
+        <!-- Formulário para gravação de áudio -->
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ record_form.recorded_audio|add_class:"hidden" }}
+            <button type="button" id="start-recording"
+                    class="w-full bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-300 flex items-center justify-center space-x-2">
+                <i class="fas fa-microphone"></i>
+                <span>Gravar áudio</span>
+            </button>
+            <button type="submit" name="record_audio" id="submit-recording" style="display:none;"
+                    class="w-full bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-300 flex items-center justify-center space-x-2">
+                <i class="fas fa-paper-plane"></i>
+                <span>Enviar áudio gravado</span>
+            </button>
+        </form>
 
-    {% if translated_text %}
-        <h2>Tradução: {{ translated_text }}</h2>
-    {% endif %}
+        {% if translated_audio %}
+        <div class="mt-6 p-4 bg-gray-50 border-l-4 border-blue-500 rounded-lg shadow-sm">
+            <h2 class="text-xl font-semibold text-gray-700">Tradução:</h2>
+            <p class="mt-2 text-gray-600">{{ translated_audio|linebreaksbr }}</p>
+        </div>
+        {% endif %}
 
-    <script>
-        let mediaRecorder;
-        let audioChunks = [];
+        <script>
+            let mediaRecorder;
+            let audioChunks = [];
 
-        document.getElementById('start-recording').addEventListener('click', function() {
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.start();
+            document.getElementById('start-recording').addEventListener('click', function() {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
 
-                    mediaRecorder.addEventListener('dataavailable', event => {
-                        audioChunks.push(event.data);
+                        mediaRecorder.addEventListener('dataavailable', event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        mediaRecorder.addEventListener('stop', () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const reader = new FileReader();
+                            reader.readAsDataURL(audioBlob);
+                            reader.onloadend = function() {
+                                document.getElementById('recorded_audio').value = reader.result;
+                                document.getElementById('submit-recording').style.display = 'inline';
+                            }
+                        });
+
+                        setTimeout(() => {
+                            mediaRecorder.stop();
+                        }, 3000);  // 3 segundos de gravação
                     });
-
-                    mediaRecorder.addEventListener('stop', () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = function() {
-                            document.getElementById('recorded_audio').value = reader.result;
-                            document.getElementById('submit-recording').style.display = 'inline';
-                        }
-                    });
-
-                    setTimeout(() => {
-                        mediaRecorder.stop();
-                    }, 3000);  // 3 segundos de gravação
-                });
-        });
-    </script>
-</body>
-</html>
+            });
+        </script>
+    </div>
+</div>
+{% endblock content %}
